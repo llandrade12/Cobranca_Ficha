@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ficha de Cobrança</title>
+<style>
+  :root{
+    --bg:#141210;
+    --paper:#1B1816;
+    --paper-2:#221D19;
+    --card:#1D1A18;
+    --ink:#EEE7DC;
+    --ink-soft:#9C9186;
+    --line:#3B342E;
+
+    --red:#D42A2A;
+    --red-2:#A81E1E;
+    --red-deep:#6E1414;
+    --red-light:#F1604F;
+    --red-bg:#241412;
+    --cream:#EFE8DA;
+
+    --verde:#EFE8DA;
+    --verde-bg:#241E17;
+    --laranja:#E0662B;
+    --laranja-bg:#241611;
+    --amarelo:#E4572E;
+    --amarelo-bg:#241512;
+    --vermelho:#F03E3E;
+    --vermelho-bg:#2A1414;
+    --azul:#C9C0B2;
+    --azul-bg:#211D19;
+    --neutro:#79706B;
+    --neutro-bg:#1E1B18;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.45;
+    min-height:100vh;
+  }
+
+  .wrap{max-width:1180px;margin:0 auto;padding:28px 20px 80px;}
+
+  header.top{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    gap:16px;
+    border-bottom:2px solid var(--red);
+    padding-bottom:16px;
+    margin-bottom:24px;
+    flex-wrap:wrap;
+  }
+  header.top .brand{
+    font-family:Georgia,"Iowan Old Style","Palatino Linotype",serif;
+    font-size:29px;
+    color:var(--ink);
+    letter-spacing:0.2px;
+  }
+  header.top .brand span{color:var(--red);}
+  header.top .sub{
+    font-size:13px;
+    color:var(--ink-soft);
+    max-width:420px;
+  }
+
+  .layout{
+    display:grid;
+    grid-template-columns:380px 1fr;
+    gap:22px;
+    align-items:start;
+  }
+  @media (max-width:860px){
+    .layout{grid-template-columns:1fr;}
+  }
+
+  .panel{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-top:3px solid var(--red);
+    border-radius:2px;
+    padding:18px;
+  }
+
+  .panel h2{
+    font-family:Georgia,"Iowan Old Style",serif;
+    font-size:17px;
+    margin:0 0 6px;
+    color:var(--ink);
+    display:flex;
+    align-items:center;
+    gap:9px;
+  }
+  .panel h2::before{
+    content:"";
+    width:9px;height:9px;
+    background:var(--red);
+    flex:0 0 auto;
+  }
+  .panel p.hint{
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin:0 0 12px;
+  }
+
+  textarea{
+    width:100%;
+    min-height:170px;
+    resize:vertical;
+    border:1px solid var(--line);
+    border-radius:2px;
+    padding:10px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:12.5px;
+    background:var(--card);
+    color:var(--ink);
+  }
+  textarea::placeholder{color:var(--ink-soft);}
+  textarea:focus{outline:2px solid var(--red);outline-offset:1px;}
+
+  .btnrow{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
+  button{
+    font:inherit;
+    font-size:13.5px;
+    font-weight:700;
+    letter-spacing:0.01em;
+    border-radius:2px;
+    border:1px solid transparent;
+    padding:9px 14px;
+    cursor:pointer;
+  }
+  button.primary{background:var(--red);color:#141210;border-color:var(--red);}
+  button.primary:hover{background:var(--red-light);border-color:var(--red-light);}
+  button.ghost{background:transparent;border-color:var(--line);color:var(--ink-soft);}
+  button.ghost:hover{border-color:var(--red);color:var(--ink);}
+
+  .legend{margin-top:18px;border-top:1px solid var(--line);padding-top:14px;}
+  .legend h3{font-size:12.5px;text-transform:none;color:var(--ink-soft);margin:0 0 8px;font-weight:600;}
+  .legend-item{display:flex;align-items:flex-start;gap:8px;font-size:12.5px;margin-bottom:6px;color:var(--ink);}
+  .legend-item b{font-weight:600;}
+  .legend-item .desc{color:var(--ink-soft);}
+
+  .error-box{
+    background:var(--red-bg);
+    border:1px solid var(--red-2);
+    color:#F5B4AC;
+    padding:10px 12px;
+    border-radius:2px;
+    font-size:13px;
+    margin-top:12px;
+  }
+
+  .counter{
+    margin-top:12px;
+    font-size:12.5px;
+    color:var(--ink);
+    font-weight:600;
+    background:var(--paper-2);
+    border:1px solid var(--line);
+    border-left:3px solid var(--red);
+    border-radius:2px;
+    padding:7px 10px;
+  }
+
+  .results-toolbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+  .results-toolbar .count{
+    font-size:13px;
+    color:var(--ink-soft);
+  }
+  .results-toolbar .count b{color:var(--ink);}
+  #copyAllBtn{background:var(--red);color:#141210;border-color:var(--red);}
+  #copyAllBtn:hover{background:var(--red-light);border-color:var(--red-light);}
+  #copyAllBtn.copied{background:var(--cream);color:#141210;border-color:var(--cream);}
+
+  #results{display:flex;flex-direction:column;gap:18px;}
+
+  .empty-state{
+    border:1px dashed var(--line);
+    border-radius:2px;
+    padding:40px 20px;
+    text-align:center;
+    color:var(--ink-soft);
+    font-size:14px;
+  }
+
+  .group-summary{
+    background:var(--paper-2);
+    border:1px solid var(--line);
+    border-top:3px solid var(--red);
+    border-radius:2px;
+    padding:16px 18px;
+  }
+  .group-summary h3{
+    font-family:Georgia,"Iowan Old Style",serif;
+    font-size:16px;
+    margin:0 0 10px;
+    color:var(--ink);
+    display:flex;
+    align-items:center;
+    gap:9px;
+  }
+  .group-summary h3::before{
+    content:"";
+    width:9px;height:9px;
+    background:var(--red);
+    flex:0 0 auto;
+  }
+  .group-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+    gap:10px 18px;
+  }
+  .group-grid .g-label{font-size:11px;color:var(--ink-soft);text-transform:none;}
+  .group-grid .g-value{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:15px;font-weight:600;color:var(--ink);}
+
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-left:6px solid var(--neutro);
+    border-radius:2px;
+    overflow:hidden;
+    box-shadow:0 1px 3px rgba(0,0,0,0.35);
+  }
+  .card.status-verde{border-left-color:var(--verde);}
+  .card.status-laranja{border-left-color:var(--laranja);}
+  .card.status-amarelo{border-left-color:var(--amarelo);}
+  .card.status-vermelho{border-left-color:var(--vermelho);}
+  .card.status-dentro{border-left-color:var(--azul);}
+  .card.status-indef{border-left-color:var(--neutro);}
+
+  .card .alerta{
+    background:repeating-linear-gradient(135deg,var(--red-2) 0px,var(--red-2) 11px,var(--red) 11px,var(--red) 22px);
+    color:#fff;
+    text-shadow:0 1px 2px rgba(0,0,0,0.5);
+    font-weight:800;
+    letter-spacing:0.02em;
+    font-size:13.5px;
+    padding:9px 16px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+
+  .card-head{
+    padding:16px 18px 12px;
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:14px;
+    flex-wrap:wrap;
+    border-bottom:1px solid var(--line);
+  }
+  .card-head .name{
+    font-family:Georgia,"Iowan Old Style",serif;
+    font-size:19px;
+    color:var(--ink);
+  }
+  .card-head .meta{font-size:12.5px;color:var(--ink-soft);margin-top:3px;}
+  .card-head .meta a, .card-head .meta span.tel{color:var(--ink-soft);}
+
+  .badge{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding:6px 12px;
+    border-radius:2px;
+    border:1px solid currentColor;
+    font-size:13px;
+    font-weight:700;
+    white-space:nowrap;
+  }
+  .badge.status-verde{background:var(--verde-bg);color:var(--verde);}
+  .badge.status-laranja{background:var(--laranja-bg);color:var(--laranja);}
+  .badge.status-amarelo{background:var(--amarelo-bg);color:var(--amarelo);}
+  .badge.status-vermelho{background:var(--vermelho-bg);color:var(--vermelho);}
+  .badge.status-dentro{background:var(--azul-bg);color:var(--azul);}
+  .badge.status-indef{background:var(--neutro-bg);color:var(--neutro);}
+
+  .card-body{
+    padding:14px 18px 18px;
+    display:grid;
+    grid-template-columns:1.1fr 1fr;
+    gap:18px;
+  }
+  @media (max-width:600px){
+    .card-body{grid-template-columns:1fr;}
+  }
+
+  .block h4{
+    font-size:11px;
+    letter-spacing:0.02em;
+    color:var(--ink-soft);
+    margin:0 0 8px;
+    font-weight:600;
+  }
+  table.kv{width:100%;border-collapse:collapse;}
+  table.kv td{
+    padding:4px 0;
+    font-size:13px;
+    border-bottom:1px dotted var(--line);
+  }
+  table.kv td.k{color:var(--ink-soft);width:52%;}
+  table.kv td.v{
+    text-align:right;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-weight:600;
+    color:var(--ink);
+  }
+  table.kv tr:last-child td{border-bottom:none;}
+
+  .highlight-box{
+    margin-top:10px;
+    background:#0F0D0C;
+    border:1px solid var(--line);
+    border-left:3px solid var(--red);
+    border-radius:2px;
+    padding:10px 14px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+  }
+  .highlight-box .lbl{font-size:12px;color:var(--ink-soft);}
+  .highlight-box .val{
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:19px;
+    font-weight:700;
+    color:var(--red-light);
+  }
+
+  .obs-row{
+    margin-top:10px;
+    font-size:12.5px;
+    background:var(--paper-2);
+    border-radius:2px;
+    padding:8px 10px;
+    color:var(--ink-soft);
+  }
+  .obs-row b{color:var(--ink);}
+
+  .card-foot{
+    padding:10px 18px 16px;
+    display:flex;
+    justify-content:flex-end;
+  }
+  .copy-msg-btn{
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--ink-soft);
+    font-size:12.5px;
+    padding:6px 12px;
+  }
+  .copy-msg-btn:hover{border-color:var(--red);color:var(--ink);}
+  .copy-msg-btn.copied{background:var(--red-bg);border-color:var(--red);color:var(--red-light);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="brand"><span>Cobrança</span></div>
+  </header>
+
+  <div class="layout">
+    <div class="panel">
+      <h2>Colar dados</h2>
+      <textarea id="pasteArea" placeholder="Cole aqui a linha inteira do cliente..."></textarea>
+      <div class="btnrow">
+        <button class="primary" id="generateBtn">Gerar ficha</button>
+        <button class="ghost" id="clearBtn">Limpar tudo</button>
+      </div>
+      <div id="errorBox"></div>
+      <div class="counter" id="counterBox" style="display:none;"></div>
+
+    </div>
+
+    <div>
+      <div class="results-toolbar" id="resultsToolbar" style="display:none;">
+        <div class="count"><b id="clientCount">0</b> cliente(s) na lista</div>
+        <div class="btnrow" style="margin-top:0;">
+          <button id="copyAllBtn">Copiar tudo</button>
+          <button class="ghost" id="clearResultsBtn">Limpar lista</button>
+        </div>
+      </div>
+      <div id="results" style="margin-top:14px;">
+        <div class="empty-state" id="emptyState">Nenhuma ficha gerada ainda. Cole os dados do cliente ao lado e clique em <b>Gerar ficha</b>.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const HEADERS = ["Cliente","CPF","Telefone","Telefone/referencia","Data inicial","Data final",
+    "Empréstimo","Diária","Juros","Total à pagar","Valor pago","Multa R$20","Multa Dobra",
+    "Multas Extras","Diárias","não emprestar","StatusCliente","Data Atual"];
+
+  const pasteArea = document.getElementById('pasteArea');
+  const generateBtn = document.getElementById('generateBtn');
+  const clearBtn = document.getElementById('clearBtn');
+  const errorBox = document.getElementById('errorBox');
+  const counterBox = document.getElementById('counterBox');
+  const resultsEl = document.getElementById('results');
+  const emptyState = document.getElementById('emptyState');
+  const resultsToolbar = document.getElementById('resultsToolbar');
+  const clientCountEl = document.getElementById('clientCount');
+  const copyAllBtn = document.getElementById('copyAllBtn');
+  const clearResultsBtn = document.getElementById('clearResultsBtn');
+
+  // Acumula todos os clientes já processados nesta sessão
+  let allItems = [];
+
+  generateBtn.addEventListener('click', run);
+
+  clearBtn.addEventListener('click', () => {
+    pasteArea.value = '';
+    errorBox.innerHTML = '';
+    counterBox.style.display = 'none';
+    resetList();
+  });
+
+  clearResultsBtn.addEventListener('click', resetList);
+
+  function resetList(){
+    allItems = [];
+    resultsEl.innerHTML = '';
+    resultsEl.appendChild(emptyState);
+    emptyState.style.display = 'block';
+    resultsToolbar.style.display = 'none';
+  }
+
+  copyAllBtn.addEventListener('click', () => {
+    if (allItems.length === 0) return;
+    const blocks = allItems.map(item => buildFichaText(item.row, item.cls));
+    const full = blocks.join('\n\n' + '—'.repeat(24) + '\n\n');
+    navigator.clipboard.writeText(full).then(() => {
+      copyAllBtn.textContent = 'Copiado!';
+      copyAllBtn.classList.add('copied');
+      setTimeout(() => { copyAllBtn.textContent = 'Copiar tudo'; copyAllBtn.classList.remove('copied'); }, 2000);
+    }).catch(() => {
+      copyAllBtn.textContent = 'Não foi possível copiar';
+    });
+  });
+
+  function stripAccents(s){
+    return (s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  }
+  function norm(s){
+    return stripAccents(String(s||'')).toLowerCase().trim();
+  }
+
+  function parseNumberBR(raw){
+    if (raw === undefined || raw === null) return 0;
+    let s = String(raw).trim();
+    if (s === '' || norm(s) === 'nan') return 0;
+    s = s.replace(/[^\d,.\-]/g,'');
+    if (s === '') return 0;
+    const hasComma = s.indexOf(',') !== -1;
+    const hasDot = s.indexOf('.') !== -1;
+    if (hasComma && hasDot) {
+      s = s.replace(/\./g,'').replace(',', '.');
+    } else if (hasComma && !hasDot) {
+      s = s.replace(',', '.');
+    }
+    const n = parseFloat(s);
+    return isNaN(n) ? 0 : n;
+  }
+
+  function parseDateFlexible(raw){
+    if (!raw) return null;
+    const s = String(raw).trim();
+    if (!s || norm(s) === 'nan') return null;
+    let m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (m) return new Date(Number(m[1]), Number(m[2])-1, Number(m[3]));
+    m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
+    if (m) {
+      let yr = Number(m[3]);
+      if (yr < 100) yr += 2000;
+      return new Date(yr, Number(m[2])-1, Number(m[1]));
+    }
+    const d = new Date(s);
+    return isNaN(d.getTime()) ? null : d;
+  }
+
+  function formatDate(d){
+    if (!d) return '—';
+    const dd = String(d.getDate()).padStart(2,'0');
+    const mm = String(d.getMonth()+1).padStart(2,'0');
+    return `${dd}/${mm}/${d.getFullYear()}`;
+  }
+
+  function formatCurrency(n){
+    return n.toLocaleString('pt-BR', {style:'currency', currency:'BRL'});
+  }
+
+  function cleanText(raw){
+    if (raw === undefined || raw === null) return '';
+    const s = String(raw).trim();
+    if (norm(s) === 'nan') return '';
+    return s;
+  }
+
+  function splitLine(line){
+    let parts = line.split('\t');
+    if (parts.length < 8) parts = line.split(';');
+    if (parts.length < 8) parts = line.split(/\s{2,}/);
+    return parts.map(p => p.trim());
+  }
+
+  function parseRow(line){
+    const parts = splitLine(line);
+    const get = i => parts[i] !== undefined ? parts[i] : '';
+
+    const row = {
+      cliente: cleanText(get(0)) || 'Cliente não identificado',
+      cpf: cleanText(get(1)),
+      telefone: cleanText(get(2)),
+      telefoneRef: cleanText(get(3)),
+      dataInicial: parseDateFlexible(get(4)),
+      dataFinal: parseDateFlexible(get(5)),
+      emprestimo: parseNumberBR(get(6)),
+      diaria: parseNumberBR(get(7)),
+      juros: parseNumberBR(get(8)),
+      totalPagar: parseNumberBR(get(9)),
+      valorPago: parseNumberBR(get(10)),
+      multaR20Qtd: parseNumberBR(get(11)),
+      multaDobraQtd: parseNumberBR(get(12)),
+      multasExtras: parseNumberBR(get(13)),
+      diariasContratadas: parseNumberBR(get(14)),
+      naoEmprestarObs: cleanText(get(15)),
+      statusCliente: cleanText(get(16)),
+      dataAtual: parseDateFlexible(get(17)),
+      fieldCount: parts.length
+    };
+    return row;
+  }
+
+  function classify(row){
+    const multasValor = (row.multaR20Qtd * 20) + (row.multaDobraQtd * row.diaria) + row.multasExtras;
+    const valorPagoSemMultas = row.valorPago - multasValor;
+    const quitado = row.valorPago > 0 && valorPagoSemMultas >= (row.totalPagar - 0.5);
+
+    let diasAtraso = null;
+    if (row.dataFinal) {
+      const ref = row.dataAtual || new Date();
+      diasAtraso = Math.floor((ref.setHours(0,0,0,0) - new Date(row.dataFinal).setHours(0,0,0,0)) / 86400000);
+    }
+
+    const isAcordo = norm(row.naoEmprestarObs).includes('acordo');
+    const alertaNaoEmprestar = norm(row.naoEmprestarObs).includes('nao emprestar');
+
+    let key, label, emoji;
+    if (isAcordo) {
+      key = 'laranja'; label = 'ACORDO'; emoji = '🟠';
+    } else if (quitado) {
+      key = 'verde'; label = 'Quitado'; emoji = '🟢';
+    } else if (diasAtraso === null) {
+      key = 'indef'; label = 'Sem data de vencimento'; emoji = '⚪';
+    } else if (diasAtraso <= 0) {
+      key = 'dentro'; label = 'Dentro do prazo'; emoji = '🔵';
+    } else if (diasAtraso < 90) {
+      key = 'amarelo'; label = 'AMARELO'; emoji = '🟡';
+    } else {
+      key = 'vermelho'; label = 'VERMELHO'; emoji = '🔴';
+    }
+
+    return { multasValor, valorPagoSemMultas, quitado, diasAtraso, key, label, emoji, alertaNaoEmprestar };
+  }
+
+  function buildFichaText(row, cls){
+    const phones = [row.telefone, row.telefoneRef].filter(Boolean).join(' / ');
+    const diasAtrasoTxt = cls.diasAtraso === null ? '—'
+      : cls.diasAtraso > 0 ? `${cls.diasAtraso} dia(s)` : 'Em dia';
+
+    let t = '';
+    t += `${row.cliente}\n`;
+    t += `Status: ${cls.emoji} ${cls.label}\n`;
+    if (cls.alertaNaoEmprestar) t += `⚠️ NÃO EMPRESTAR — ${row.naoEmprestarObs}\n`;
+    t += `CPF: ${row.cpf || '—'}\n`;
+    t += `Telefone(s): ${phones || '—'}\n`;
+    t += `\nCiclo do empréstimo\n`;
+    t += `Data inicial: ${formatDate(row.dataInicial)}\n`;
+    t += `Data final (vencimento): ${formatDate(row.dataFinal)}\n`;
+    t += `Diárias contratadas: ${row.diariasContratadas || '—'}\n`;
+    t += `Dias em atraso: ${diasAtrasoTxt}\n`;
+    t += `Data de referência: ${formatDate(row.dataAtual)}\n`;
+    t += `\nValores\n`;
+    t += `Empréstimo: ${formatCurrency(row.emprestimo)}\n`;
+    t += `Diária: ${formatCurrency(row.diaria)}\n`;
+    t += `Juros: ${formatCurrency(row.juros)}\n`;
+    t += `Total a pagar: ${formatCurrency(row.totalPagar)}\n`;
+    t += `Valor pago (com multas): ${formatCurrency(row.valorPago)}\n`;
+    t += `Multas (R$20 x${row.multaR20Qtd} + Dobra x${row.multaDobraQtd} + Extras): ${formatCurrency(cls.multasValor)}\n`;
+    t += `Valor pago sem as multas: ${formatCurrency(cls.valorPagoSemMultas)}\n`;
+    if (row.statusCliente) t += `\nStatus/observação da planilha: ${row.statusCliente}\n`;
+    return t;
+  }
+
+  function buildWhatsAppMessage(row, cls){
+    const saldo = row.totalPagar - row.valorPago;
+    let msg = `Olá ${row.cliente.split(' ')[0]}, tudo bem?\n\n`;
+    msg += `Referente ao empréstimo de ${formatCurrency(row.emprestimo)} (ciclo ${formatDate(row.dataInicial)} a ${formatDate(row.dataFinal)}):\n`;
+    msg += `- Total a pagar: ${formatCurrency(row.totalPagar)}\n`;
+    msg += `- Valor pago até agora: ${formatCurrency(row.valorPago)}\n`;
+    if (cls.diasAtraso !== null && cls.diasAtraso > 0) {
+      msg += `- Está em atraso há ${cls.diasAtraso} dia(s)\n`;
+    }
+    if (saldo > 0) {
+      msg += `- Saldo em aberto: ${formatCurrency(saldo)}\n`;
+    }
+    msg += `\nPor favor, entre em contato para regularizar. Obrigado!`;
+    return msg;
+  }
+
+  function cardHTML(row, cls, idx){
+    const alertaHTML = cls.alertaNaoEmprestar
+      ? `<div class="alerta">⚠️ NÃO EMPRESTAR — observação registrada na coluna P: "${row.naoEmprestarObs}"</div>`
+      : '';
+
+    const phones = [row.telefone, row.telefoneRef].filter(Boolean).join(' · ');
+    const metaLine = [row.cpf ? `CPF: ${row.cpf}` : '', phones].filter(Boolean).join(' &nbsp;|&nbsp; ');
+
+    const diasAtrasoTxt = cls.diasAtraso === null ? '—'
+      : cls.diasAtraso > 0 ? `${cls.diasAtraso} dia(s)` : 'Em dia';
+
+    const obsHTML = row.statusCliente
+      ? `<div class="obs-row"><b>Status/observação da planilha (col. Q):</b> ${row.statusCliente}</div>`
+      : '';
+
+    const cardId = `card-${idx}`;
+
+    return `
+    <div class="card status-${cls.key}">
+      ${alertaHTML}
+      <div class="card-head">
+        <div>
+          <div class="name">${row.cliente}</div>
+          <div class="meta">${metaLine || 'Sem CPF/telefone informado'}</div>
+        </div>
+        <div class="badge status-${cls.key}">${cls.emoji} ${cls.label}</div>
+      </div>
+      <div class="card-body">
+        <div class="block">
+          <h4>Ciclo do empréstimo</h4>
+          <table class="kv">
+            <tr><td class="k">Data inicial</td><td class="v">${formatDate(row.dataInicial)}</td></tr>
+            <tr><td class="k">Data final (vencimento)</td><td class="v">${formatDate(row.dataFinal)}</td></tr>
+            <tr><td class="k">Diárias contratadas</td><td class="v">${row.diariasContratadas || '—'}</td></tr>
+            <tr><td class="k">Dias em atraso</td><td class="v">${diasAtrasoTxt}</td></tr>
+            <tr><td class="k">Data de referência</td><td class="v">${formatDate(row.dataAtual)}</td></tr>
+          </table>
+        </div>
+        <div class="block">
+          <h4>Valores</h4>
+          <table class="kv">
+            <tr><td class="k">Empréstimo</td><td class="v">${formatCurrency(row.emprestimo)}</td></tr>
+            <tr><td class="k">Diária</td><td class="v">${formatCurrency(row.diaria)}</td></tr>
+            <tr><td class="k">Juros</td><td class="v">${formatCurrency(row.juros)}</td></tr>
+            <tr><td class="k">Total a pagar</td><td class="v">${formatCurrency(row.totalPagar)}</td></tr>
+            <tr><td class="k">Valor pago (com multas)</td><td class="v">${formatCurrency(row.valorPago)}</td></tr>
+            <tr><td class="k">Multas (R$20 x${row.multaR20Qtd} + Dobra x${row.multaDobraQtd} + Extras)</td><td class="v">${formatCurrency(cls.multasValor)}</td></tr>
+          </table>
+          <div class="highlight-box">
+            <span class="lbl">Valor pago sem as multas</span>
+            <span class="val">${formatCurrency(cls.valorPagoSemMultas)}</span>
+          </div>
+        </div>
+      </div>
+      ${obsHTML}
+      <div class="card-foot">
+        <button class="copy-msg-btn" data-id="${cardId}">Copiar mensagem de cobrança</button>
+      </div>
+    </div>`;
+  }
+
+  function groupSummaryHTML(clientName, rows, clsList){
+    const totalEmprestado = rows.reduce((s,r)=>s+r.emprestimo,0);
+    const totalPagoSemMultas = clsList.reduce((s,c)=>s+c.valorPagoSemMultas,0);
+    const totalMultas = clsList.reduce((s,c)=>s+c.multasValor,0);
+    const worst = clsList.reduce((w,c)=>{
+      const order = {vermelho:5, amarelo:4, laranja:3, dentro:2, indef:1, verde:0};
+      return (order[c.key] > order[w.key]) ? c : w;
+    }, clsList[0]);
+    const anyAlert = clsList.some(c=>c.alertaNaoEmprestar);
+
+    return `
+    <div class="group-summary">
+      <h3>${clientName} — ${rows.length} ciclo(s) encontrado(s)</h3>
+      <div class="group-grid">
+        <div><div class="g-label">Status mais recente/grave</div><div class="g-value">${worst.emoji} ${worst.label}</div></div>
+        <div><div class="g-label">Total já emprestado</div><div class="g-value">${formatCurrency(totalEmprestado)}</div></div>
+        <div><div class="g-label">Total pago sem multas</div><div class="g-value">${formatCurrency(totalPagoSemMultas)}</div></div>
+        <div><div class="g-label">Total em multas</div><div class="g-value">${formatCurrency(totalMultas)}</div></div>
+        ${anyAlert ? `<div><div class="g-label">Observação</div><div class="g-value" style="color:var(--vermelho)">⚠️ NÃO EMPRESTAR</div></div>` : ''}
+      </div>
+    </div>`;
+  }
+
+  function run(){
+    errorBox.innerHTML = '';
+    const raw = pasteArea.value;
+    const lines = raw.split('\n').map(l=>l.trim()).filter(l=>l.length>0);
+
+    if (lines.length === 0) {
+      errorBox.innerHTML = `<div class="error-box">Cole ao menos uma linha de dados antes de gerar a ficha.</div>`;
+      return;
+    }
+
+    const parsed = lines.map(parseRow);
+    const badRows = parsed.filter(r => r.fieldCount < 8);
+    if (badRows.length > 0) {
+      errorBox.innerHTML = `<div class="error-box">Não consegui separar as colunas corretamente em ${badRows.length} linha(s). Confirme que copiou a linha inteira da planilha (colunas A até R) e colou sem alterar.</div>`;
+    }
+
+    const newItems = parsed.map(r => ({ row: r, cls: classify(r) }));
+
+    // acumula com o que já foi gerado antes, em vez de substituir
+    allItems = allItems.concat(newItems);
+
+    renderAll();
+
+    // limpa o campo e mostra confirmação para o usuário colar o próximo cliente
+    pasteArea.value = '';
+    counterBox.style.display = 'block';
+    counterBox.textContent = `✔ ${newItems.length} cliente(s) adicionado(s). Total na lista: ${allItems.length}. Pode colar o próximo.`;
+    pasteArea.focus();
+  }
+
+  function renderAll(){
+    emptyState.style.display = 'none';
+    resultsEl.innerHTML = '';
+
+    if (allItems.length === 0) {
+      resultsEl.appendChild(emptyState);
+      emptyState.style.display = 'block';
+      resultsToolbar.style.display = 'none';
+      return;
+    }
+
+    resultsToolbar.style.display = 'flex';
+    clientCountEl.textContent = allItems.length;
+
+    // group by client name (case-insensitive) to show a consolidated summary when relevant
+    const groups = {};
+    allItems.forEach(item => {
+      const key = norm(item.row.cliente);
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(item);
+    });
+
+    let cardIdx = 0;
+    const cardIndexToItem = [];
+    Object.values(groups).forEach(group => {
+      if (group.length > 1) {
+        resultsEl.insertAdjacentHTML('beforeend',
+          groupSummaryHTML(group[0].row.cliente, group.map(g=>g.row), group.map(g=>g.cls)));
+      }
+      group.forEach(item => {
+        resultsEl.insertAdjacentHTML('beforeend', cardHTML(item.row, item.cls, cardIdx));
+        cardIndexToItem[cardIdx] = item;
+        cardIdx++;
+      });
+    });
+
+    // wire up individual copy buttons
+    resultsEl.querySelectorAll('.copy-msg-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const item = cardIndexToItem[Number(btn.dataset.id.replace('card-',''))];
+        const msg = buildWhatsAppMessage(item.row, item.cls);
+        navigator.clipboard.writeText(msg).then(() => {
+          btn.textContent = 'Mensagem copiada!';
+          btn.classList.add('copied');
+          setTimeout(() => { btn.textContent = 'Copiar mensagem de cobrança'; btn.classList.remove('copied'); }, 2000);
+        }).catch(() => {
+          btn.textContent = 'Não foi possível copiar';
+        });
+      });
+    });
+  }
+})();
+</script>
+</body>
+</html>
